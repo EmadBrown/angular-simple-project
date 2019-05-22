@@ -1,0 +1,148 @@
+<mat-toolbar class="d-flex justify-content-between">
+  <h1>Departments</h1>
+  <button (click)="createDepartment()" mat-flat-button color="warn">
+    New Department
+  </button>
+</mat-toolbar>
+<div class="col-md py-3">
+  <div *ngIf="showDepartmentForm" class="card col-12 bg light py-2 my-3">
+    <form #departmentForm="ngForm" (ngSubmit)="onSubmit(departmentForm)">
+      <div class="controls">
+        <input
+          #departmentId="ngModel"
+          type="hidden"
+          [(ngModel)]="department.id"
+          name="id"
+        />
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="form_name">Name *</label>
+              <input
+                #departmentName="ngModel"
+                type="text"
+                [(ngModel)]="department.name"
+                [ngClass]="{
+                  'is-invalid': departmentName.errors && departmentName.touched
+                }"
+                name="name"
+                minlength="3"
+                class="form-control"
+                placeholder="Please enter Name *"
+                required="required"
+                data-error="Name is required."
+              />
+              <div
+                [hidden]="!departmentName.errors?.required"
+                class="invalid-feedback"
+              >
+                Name is required
+              </div>
+              <div
+                [hidden]="!departmentName.errors?.minlength"
+                class="invalid-feedback"
+              >
+                Must be at least 3 characters
+              </div>
+              <label for="form_building">Building *</label>
+              <input
+                #departmentBuilding="ngModel"
+                type="text"
+                maxlength="4"
+                [(ngModel)]="department.building"
+                [ngClass]="{
+                  'is-invalid':
+                    departmentBuilding.errors && departmentBuilding.touched
+                }"
+                name="building"
+                minlength="2"
+                class="form-control"
+                placeholder="Please enter Building *"
+                required="required"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <button
+            [disabled]="!departmentForm.form.valid"
+            class="btn btn-success"
+          >
+            {{ submit }}
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p class="text-muted">
+            <strong>*</strong> These fields are required.
+          </p>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="row">
+    <div class="col-12 d-flex flex-column">
+      <mat-form-field>
+        <input
+          matInput
+          #input
+          [(ngModel)]="term"
+          maxlength="10"
+          placeholder="Enter some input"
+        />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-select placeholder="Select me" [(ngModel)]="key">
+          <mat-option *ngFor="let key of keys" value="{{ key }}">{{
+            key | titlecase
+          }}</mat-option>
+        </mat-select>
+        <mat-hint align="end">Here's the dropdown arrow ^</mat-hint>
+      </mat-form-field>
+    </div>
+    <div
+      class="col-md-3 py-2"
+      *ngFor="let department of (departments | filterPro: term:key)"
+      (click)="onSelect(department)"
+    >
+      <div class="card ">
+        <div class="card-header badge badge-light">
+          <h6>{{ department.id }} {{ department.name }}</h6>
+        </div>
+        <div class="card-body row justify-content-around">
+          <button (click)="onSelect(department)" class="btn btn-secondary">
+            Update
+          </button>
+          <button (click)="onDelete(department)" class="btn btn-outline-danger">
+            Delete
+          </button>
+        </div>
+      </div>
+      <div class="card-footer d-flex justify-content-between">
+        <span class="text-primary">
+          <mat-chip-list>Building
+            <mat-chip color="accent" selected
+            >{{ department.building }}
+            </mat-chip>
+          </mat-chip-list>
+        </span>
+      </div>
+      <div class="card-footer d-flex justify-content-between">
+        <span class="text-primary">
+          <h6 >Working employees</h6>
+          <mat-chip-list>
+            <mat-chip color="primary" selected
+              >{{ department.employees }}
+            </mat-chip>
+          </mat-chip-list>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

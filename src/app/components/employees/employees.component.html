@@ -1,0 +1,172 @@
+<div class="col-md py-3">
+  <div class="row align-content-between">
+    <div class="col-md-10">
+      <h2 class="division">EMPLOYEES</h2>
+    </div>
+    <div class="col-md-2 d-flex justify-content-end">
+      <button (click)="createEmployee()" class="btn btn-primary btn-block">
+        New Employee
+      </button>
+    </div>
+  </div>
+  <div *ngIf="showEmployeeForm" class="card col-12 bg light py-2 my-3">
+    <form #employeeForm="ngForm" (ngSubmit)="onSubmit(employeeForm)">
+      <div class="controls">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="form_first_name">First Name *</label>
+              <input
+                #employeeFirstName="ngModel"
+                type="text"
+                [(ngModel)]="employees.first_name"
+                [ngClass]="{
+                  'is-invalid':
+                    employeeFirstName.errors && employeeFirstName.touched
+                }"
+                name="first_name"
+                minlength="3"
+                class="form-control"
+                placeholder="Please enter First Name *"
+                required="required"
+                data-error="First Name is required."
+              />
+              <label for="form_last_name">Last Name *</label>
+              <input
+                #employeeLastName="ngModel"
+                type="text"
+                [(ngModel)]="employees.last_name"
+                [ngClass]="{
+                  'is-invalid':
+                    employeeLastName.errors && employeeLastName.touched
+                }"
+                name="last_name"
+                minlength="3"
+                class="form-control"
+                placeholder="Please enter Last Name *"
+                required="required"
+                data-error="Last Name is required."
+              />
+              <div
+                [hidden]="!employeeLastName.errors?.required"
+                class="invalid-feedback"
+              >
+                Last name is required
+              </div>
+              <div
+                [hidden]="!!employeeLastName.errors?.minlength"
+                class="invalid-feedback"
+              >
+                Must be at least 3 characters
+              </div>
+              <div class="d-flex justify-content-between py-4">
+                <div>
+                  <mat-form-field>
+                    <mat-select
+                      placeholder="Select me"
+                      [(ngModel)]="employee.department_id"
+                      name="department_id"
+                      required
+                    >
+                      <mat-option
+                        *ngFor="let department of departments"
+                        value="{{ department.id }}"
+                        >{{ department.name | titlecase }}</mat-option
+                      >
+                    </mat-select>
+
+                    <mat-hint align="end">Here's the dropdown arrow ^</mat-hint>
+                  </mat-form-field>
+                </div>
+                <div>
+                  <mat-form-field class="example-full-width">
+                    <input matInput [matDatepicker]="picker"   [(ngModel)]="employee.birth_date" placeholder="Choose a date" name="birth_date">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <button [disabled]="!employeeForm.form.valid" class="btn btn-success">
+            {{ submit }}
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p class="text-muted">
+            <strong>*</strong> These fields are required.
+          </p>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="row">
+    <div class="col-12 d-flex flex-column">
+      <mat-form-field>
+        <input
+          matInput
+          #input
+          [(ngModel)]="term"
+          maxlength="10"
+          placeholder="Enter First Name"
+        />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-select placeholder="Select me" [(ngModel)]="key">
+          <mat-option *ngFor="let key of keys" value="{{ key }}">{{
+            this.replaceUnderscores(key) | titlecase
+          }}</mat-option>
+        </mat-select>
+        <mat-hint align="end">Here's the dropdown arrow ^</mat-hint>
+      </mat-form-field>
+    </div>
+    <div
+      class="col-md-3 py-2"
+      *ngFor="let employee of (employees | filterPro: term:key)"
+      (click)="onSelect(employee)"
+    >
+      <div class="card ">
+        <div
+          class="card-header badge badge-light d-flex px-3 justify-content-around"
+        >
+          <h4>#{{ employee.id }}</h4>
+        </div>
+        <div class="card-body">
+          <div class="row p-3 align-items-center flex-column">
+            <img
+              *ngIf="employee.gender == 'male'; else femaleAvatar"
+              src="/assets/img/img_avatar_male.png"
+              alt="Avatar"
+              class="avatar"
+            />
+            <ng-template #femaleAvatar>
+              <img
+                src="/assets/img/img_avatar_female.png"
+                alt="Avatar"
+                class="avatar"
+              />
+            </ng-template>
+            <h4>{{ employee.first_name }} {{ employee.last_name }}</h4>
+          </div>
+          <div class="row justify-content-around">
+            <button (click)="onSelect(employee)" class="btn btn-secondary">
+              Update
+            </button>
+            <button (click)="onDelete(employee)" class="btn btn-outline-danger">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

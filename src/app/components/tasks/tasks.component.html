@@ -1,0 +1,191 @@
+<mat-toolbar class="d-flex justify-content-between">
+  <h2>Tasks</h2>
+  <button (click)="createTask()" mat-raised-button color="primary">
+    New Task
+  </button>
+</mat-toolbar>
+
+<div *ngIf="showTaskForm" class="card col-12 bg-light py-3 my-3">
+  <form #taskForm="ngForm" (ngSubmit)="onSubmit(taskForm)">
+    <div class="controls">
+      <input #tastId="ngModel" type="hidden" [(ngModel)]="task.id" name="id" />
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group">
+            <label for="form_name">Name * </label>
+            <input
+              #taskTitle="ngModel"
+              type="text"
+              [(ngModel)]="task.name"
+              [ngClass]="{
+                'is-invalid': taskTitle.errors && taskTitle.touched
+              }"
+              name="name"
+              minlength="3"
+              class="form-control"
+              placeholder="Please enter name *"
+              required="required"
+              data-error="title is required."
+            />
+            <div
+              [hidden]="!taskTitle.errors?.required"
+              class="invalid-feedback"
+            >
+              Title is required
+            </div>
+            <div
+              [hidden]="!taskTitle.errors?.minlength"
+              class="invalid-feedback"
+            >
+              Must be at least 3 characters
+            </div>
+          </div>
+          <div class="my-3">
+            <mat-form-field>
+              <mat-select
+                placeholder="Select department"
+                [(ngModel)]="task.department_id"
+                name="department_id"
+                required
+              >
+                <mat-option
+                  *ngFor="let department of departments"
+                  value="{{ department.id }}"
+                  >{{ department.name | titlecase }}</mat-option
+                >
+              </mat-select>
+
+              <mat-hint align="end">Here's the dropdown arrow ^</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <!-- <div class="form-group">
+          <label for="form_message">Description *</label>
+          <textarea
+            #taskDescription="ngModel"
+            [(ngModel)]="task.description"
+            [ngClass]="{
+              'is-invalid': taskDescription.errors && taskDescription.touched
+            }"
+            name="description"
+            class="form-control"
+            placeholder="description for the new task *"
+            rows="4"
+            minlength="5"
+            required="required"
+          ></textarea>
+          <div
+            [hidden]="!taskDescription.errors?.required"
+            class="invalid-feedback"
+          >
+            Description is required
+          </div>
+          <div
+            [hidden]="!taskDescription.errors?.minlength"
+            class="invalid-feedback"
+          >
+            Must be at least 5 characters
+          </div>
+        </div> -->
+      </div>
+      <div class="col-md-12">
+        <button [disabled]="!taskForm.form.valid" class="btn btn-success">
+          {{ submit }}
+        </button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <p class="text-muted"><strong>*</strong> These fields are required.</p>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="row py-3">
+  <div class="col-12 d-flex flex-column">
+    <mat-form-field>
+      <input
+        matInput
+        #input
+        [(ngModel)]="term"
+        maxlength="10"
+        placeholder="Enter some input"
+      />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-select placeholder="Select me" [(ngModel)]="key">
+        <mat-option *ngFor="let key of keys" value="{{ key }}">{{
+          key | titlecase
+        }}</mat-option>
+      </mat-select>
+      <mat-hint align="end">Here's the dropdown arrow ^</mat-hint>
+    </mat-form-field>
+  </div>
+  <div class="col-12 shadow" *ngFor="let task of (tasks | filterPro: term:key)">
+    <div class="card my-2">
+      <div
+        class="card-header d-flex justify-content-between flex-column flex-sm-row"
+      >
+        <div class="d-flex justify-content-between">
+          <h3>#{{ task.id }} | {{ task.name }}</h3>
+          <button (click)="task.hide = !task.hide" class="btn btn-dark mx-2">
+            <i [ngClass]="task.hide ? 'fa fa-minus' : 'fa fa-plus-circle'"></i>
+          </button>
+        </div>
+
+        <div class="d-flex justify-content-center my-2 my-sm-0">
+          <button (click)="onSelect(task)" class="btn btn-secondary  mx-2">
+            Update
+          </button>
+          <button (click)="onDelete(task)" class="btn btn-outline-danger">
+            Delete
+          </button>
+        </div>
+      </div>
+      <div *ngIf="task.hide" class="card-body">
+        <h5>
+          #{{ task.department_id }}
+          <div *ngFor="let department of departments">
+            <div *ngIf="department.id == task.department_id">
+              Department:
+              <mat-chip-list aria-label="Fish selection">
+                <mat-chip color="accent" selected>{{
+                  department.name
+                }}</mat-chip>
+              </mat-chip-list>
+              <h5>Employees:</h5>
+              <div *ngFor="let employee of employees">
+                <div *ngIf="employee.department_id == department.id">
+                  <mat-chip-list aria-label="Fish selection">
+                    <mat-chip color="primary" selected>
+                      {{ employee.first_name }}
+                      {{ employee.last_name }}</mat-chip
+                    >
+                  </mat-chip-list>
+                </div>
+              </div>
+            </div>
+          </div>
+        </h5>
+      </div>
+      <div class="card-footer d-flex justify-content-between">
+        <span class="text-muted">{{ task.due_date | date: "longDate" }}</span>
+        <span class="text-primary">
+          <mat-chip-list>
+            <mat-chip color="warn" selected
+              >#{{ task.department_id }}
+            </mat-chip>
+          </mat-chip-list>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
